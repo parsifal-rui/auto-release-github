@@ -126,7 +126,7 @@ def insert_release_notes(file_path, new_content):
         f.write('\n'.join(new_lines))
 
 
-def push_to_github(processed_content, github_token, target_repo, create_pr=True):
+def push_to_github(processed_content, github_token, target_repo, file_path, create_pr=True):
     """
     推送到 GitHub（创建 PR 或直接推送）
     
@@ -134,9 +134,11 @@ def push_to_github(processed_content, github_token, target_repo, create_pr=True)
         processed_content: 处理后的 release notes
         github_token: GitHub token
         target_repo: 目标仓库（如 "DaoCloud/DaoCloud-docs"）
+        file_path: 目标文件路径（如 "docs/zh/docs/ghippo/intro/release-notes.md"）
         create_pr: 是否创建 PR
     """
     log(f"准备推送到 {target_repo}...")
+    log(f"目标文件: {file_path}")
     
     # 创建临时目录
     temp_dir = tempfile.mkdtemp(prefix="github_docs_")
@@ -159,7 +161,7 @@ def push_to_github(processed_content, github_token, target_repo, create_pr=True)
             run_command(f'git checkout -b {branch_name}', cwd=temp_dir)
         
         # 更新文件
-        release_notes_file = os.path.join(temp_dir, "docs/zh/docs/ghippo/intro/release-notes.md")
+        release_notes_file = os.path.join(temp_dir, file_path)
         
         if not os.path.exists(release_notes_file):
             raise FileNotFoundError(f"目标文件不存在: {release_notes_file}")
@@ -168,7 +170,7 @@ def push_to_github(processed_content, github_token, target_repo, create_pr=True)
         insert_release_notes(release_notes_file, processed_content)
         
         # Commit
-        run_command('git add docs/zh/docs/ghippo/intro/release-notes.md', cwd=temp_dir)
+        run_command(f'git add "{file_path}"', cwd=temp_dir)
         
         # 检查是否有变更
         status = run_command('git status --porcelain', cwd=temp_dir)
@@ -266,8 +268,13 @@ def main():
     # 读取配置
     gitlab_url = "https://gitlab.daocloud.cn"
     gitlab_project = "ndx/ghippo"
-    #target_github_repo = os.environ.get("TARGET_REPO", "DaoCloud/DaoCloud-docs")
-    target_github_repo = os.environ.get("TARGET_REPO", "parsifal-rui/test-docs") # for test
+    
+    # 目标仓库和文件路径配置
+    # 测试环境：parsifal-rui/test-docs, release-notes.md
+    # 正式环境：DaoCloud/DaoCloud-docs, docs/zh/docs/ghippo/intro/release-notes.md
+    target_github_repo = os.environ.get("TARGET_REPO", "parsifal-rui/test-docs")
+    target_file_path = os.environ.get("TARGET_FILE_PATH", "release-notes.md")
+    
     # 读取环境变量
     gitlab_token = os.environ.get("GITLAB_TOKEN")
     drun_api_key = os.environ.get("DRUN_API_KEY")
@@ -318,9 +325,10 @@ def main():
         
         # Step 3: 推送到 GitHub
         log(f"【步骤 3/3】推送到 GitHub ({target_github_repo})...")
+        log(f"目标文件: {target_file_path}")
         log(f"模式: {'创建 PR' if create_pr else '直接推送'}")
         
-        success = push_to_github(processed_notes, github_token, target_github_repo, create_pr)
+        success = push_to_github(processed_notes, github_token, target_github_repo, target_file_path, create_pr)
         
         if success:
             log("=" * 60)

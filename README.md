@@ -39,7 +39,19 @@ GitHub (DaoCloud/DaoCloud-docs)
 
 ---
 
+## ⚠️ 重要说明
+
+因为内网 GitLab（`gitlab.daocloud.cn`）无法从公网访问，必须使用 **Self-hosted Runner**。
+
+详细配置请参考：[RUNNER_SETUP.md](./RUNNER_SETUP.md)
+
+---
+
 ## 🚀 配置步骤
+
+### 步骤 0：配置 Self-hosted Runner ⭐
+
+**在继续之前，请先按照 [RUNNER_SETUP.md](./RUNNER_SETUP.md) 配置好 Self-hosted Runner。**
 
 ### 步骤 1：初始化仓库
 
@@ -219,9 +231,46 @@ env:
 
 ---
 
+## 🔄 环境切换
+
+### 测试环境 → 正式环境
+
+测试成功后，在 `.github/workflows/sync-release-notes.yml` 中修改：
+
+```yaml
+# 找到 env 部分，修改：
+TARGET_REPO: "DaoCloud/DaoCloud-docs"
+TARGET_FILE_PATH: "docs/zh/docs/ghippo/intro/release-notes.md"
+```
+
+提交并推送：
+```bash
+git add .github/workflows/sync-release-notes.yml
+git commit -m "config: switch to production environment"
+git push
+```
+
+### 快速切换配置对照
+
+| 环境 | TARGET_REPO | TARGET_FILE_PATH |
+|------|------------|------------------|
+| 测试 | `parsifal-rui/test-docs` | `release-notes.md` |
+| 正式 | `DaoCloud/DaoCloud-docs` | `docs/zh/docs/ghippo/intro/release-notes.md` |
+
+---
+
 ## 🐛 常见问题
 
-### 1. Workflow 不触发
+### 1. Connection timed out 连接 GitLab 失败
+
+**原因**：Runner 无法访问内网 GitLab
+
+**解决**：
+- 确认使用了 Self-hosted Runner（`runs-on: self-hosted`）
+- 确认 Runner 机器能访问 `gitlab.daocloud.cn`
+- 在 Runner 机器上测试：`curl https://gitlab.daocloud.cn`
+
+### 2. Workflow 不触发
 
 **检查**：
 - Secrets 是否配置正确（名称区分大小写）

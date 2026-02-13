@@ -19,7 +19,7 @@ on:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # 使用 self-hosted runner（因为需要访问内网 GitLab）
     
     steps:
       - name: Checkout 当前仓库
@@ -41,6 +41,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           INPUT_TAG: ${{ github.event.inputs.tag }}
           CREATE_PR: ${{ github.event.inputs.create_pr || 'true' }}
+          # 目标仓库配置（测试 vs 正式）
+          TARGET_REPO: "parsifal-rui/test-docs"
+          TARGET_FILE_PATH: "release-notes.md"
+          # 正式环境使用：
+          # TARGET_REPO: "DaoCloud/DaoCloud-docs"
+          # TARGET_FILE_PATH: "docs/zh/docs/ghippo/intro/release-notes.md"
         run: |
           python scripts/update_release_notes.py
       

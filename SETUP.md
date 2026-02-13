@@ -81,26 +81,21 @@ git push -u origin main
 
 ---
 
-## ⚙️ 第 5 步：修改目标仓库（1 分钟）
+## ⚙️ 第 5 步：配置 Self-hosted Runner（10 分钟）⭐
 
-在 `auto-release-github/scripts/update_release_notes.py` 中：
+**重要**：因为内网 GitLab 无法从公网访问，必须配置 Self-hosted Runner。
 
-找到第 270 行左右：
-```python
-target_github_repo = os.environ.get("TARGET_REPO", "DaoCloud/DaoCloud-docs")
-```
+详细步骤请查看：[RUNNER_SETUP.md](./RUNNER_SETUP.md)
 
-改成：
-```python
-target_github_repo = os.environ.get("TARGET_REPO", "你的用户名/test-doc")
-```
+**快速步骤**：
+1. 在 GitHub 仓库 `Settings` → `Actions` → `Runners` → `New self-hosted runner`
+2. 按页面提示，在内网机器上下载并注册 Runner
+3. 启动 Runner（或安装为服务）
+4. 在 workflow 中改成 `runs-on: self-hosted`
 
-提交并推送：
-```bash
-git add scripts/update_release_notes.py
-git commit -m "config: set test repo as target"
-git push
-```
+验证：
+- [ ] GitHub 页面显示 Runner 为 Idle（绿色）
+- [ ] Runner 终端显示 "Listening for Jobs"
 
 ---
 
