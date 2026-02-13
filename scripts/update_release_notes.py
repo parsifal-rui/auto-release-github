@@ -266,8 +266,8 @@ def main():
     # 读取配置
     gitlab_url = "https://gitlab.daocloud.cn"
     gitlab_project = "ndx/ghippo"
-    target_github_repo = os.environ.get("TARGET_REPO", "DaoCloud/DaoCloud-docs")
-    
+    #target_github_repo = os.environ.get("TARGET_REPO", "DaoCloud/DaoCloud-docs")
+    target_github_repo = os.environ.get("TARGET_REPO", "parsifal-rui/test-docs") # for test
     # 读取环境变量
     gitlab_token = os.environ.get("GITLAB_TOKEN")
     drun_api_key = os.environ.get("DRUN_API_KEY")
