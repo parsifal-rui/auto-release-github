@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 日志文件
+sync_result.log
+*.log
+
+# 临时文件
+*.tmp
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
